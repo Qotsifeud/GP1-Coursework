@@ -270,7 +270,7 @@ void GameSource::checkCollision(int width, int height)
 			}
 		}
 
-		if (m_bomb.getXPos() == m_player->getXPos() && m_bomb.getYPos() == m_player->getXPos())
+		if (m_bomb.getXPos() == m_player->getXPos() && m_bomb.getYPos() == m_player->getYPos())
 		{
 			setGameState(2);
 		}
@@ -307,7 +307,7 @@ void GameSource::gameLoop()
 		case GAMEOVER:
 			m_menu->gameOver();
 			this->setGameState(menuChoice);
-			initaliseGame();
+			this->initaliseGame();
 			break;
 		}
 

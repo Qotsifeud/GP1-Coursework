@@ -14,6 +14,7 @@ void Menu::run()
         cin >> choice;
 
         switch (choice) {
+
         case 1:
             menuChoice = 1;
             valid = true;

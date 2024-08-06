@@ -17,7 +17,7 @@
 #define GROUND 29
 #define PLAYER 28
 #define BARRIER 22
-#define SPEED 5
+#define SPEED 2
 
 class GameSource
 {
