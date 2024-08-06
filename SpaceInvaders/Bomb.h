@@ -14,6 +14,10 @@ public:
 	int getXP() { return this->xPos; };
 	int getYP() { return this->yPos; };
 
+	bool isOnPlayer(Player* player);
+	bool isOnGround(int ground);
+	bool isOnMissile(Missile missile);
+
 private:
 	bool isActive;
 };

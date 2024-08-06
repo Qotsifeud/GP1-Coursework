@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+#include "Missile.h"
 
 class Alien:GameObject //inheritance
 {
@@ -21,6 +22,8 @@ public:
 
 	bool getState() { return this->m_isActive; }
 
+	bool isOnPlayer(Player* player);
+	bool isOnMissile(Missile m_missile);
 	
 
 private:

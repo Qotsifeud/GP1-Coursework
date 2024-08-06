@@ -16,3 +16,8 @@ void Player::update()
 	}
 }
 
+bool Player::playerCollisionCheck()
+{
+	return false;
+}
+

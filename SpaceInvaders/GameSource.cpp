@@ -10,9 +10,9 @@ double randomNum() {
 	return dist(rng);
 };
 
-extern int menuChoice; 
+extern int menuChoice;
 
-GameSource::GameSource(): m_player(new Player()), m_barriers(20) {} // heap allocatoin (explain new and pointer)
+GameSource::GameSource() : m_player(new Player()), m_barriers(20) {} // heap allocatoin (explain new and pointer)
 
 GameSource::~GameSource()
 {
@@ -22,14 +22,14 @@ GameSource::~GameSource()
 void GameSource::setPlayerPoisiton()
 {
 	m_player->setXPos(15);
-	m_player->setYPos(PLAYER); 
+	m_player->setYPos(PLAYER);
 }
 
 void GameSource::setAlienPositions()
 {
 	for (int i = 0; i < 20; i++)
 	{
-		m_aliens[i].setPostion(i*3, 1);
+		m_aliens[i].setPostion(i * 3, 1);
 	}
 }
 
@@ -42,22 +42,22 @@ void GameSource::setBarrierPositions()
 
 	for (int i = 0; i < 5; i++)
 	{
-		m_barriers[i].setPostion(i+10, BARRIER);
+		m_barriers[i].setPostion(i + 10, BARRIER);
 		m_barriers[i].setHealth(2);
 	}
 	for (int i = 5; i < 10; i++)
 	{
-		m_barriers[i].setPostion(i+25, BARRIER);
+		m_barriers[i].setPostion(i + 25, BARRIER);
 		m_barriers[i].setHealth(2);
 	}
 	for (int i = 10; i < 15; i++)
 	{
-		m_barriers[i].setPostion(i+40, BARRIER);
+		m_barriers[i].setPostion(i + 40, BARRIER);
 		m_barriers[i].setHealth(2);
 	}
 	for (int i = 15; i < 20; i++)
 	{
-		m_barriers[i].setPostion(i+55, BARRIER);
+		m_barriers[i].setPostion(i + 55, BARRIER);
 		m_barriers[i].setHealth(2);
 	}
 }
@@ -65,8 +65,8 @@ void GameSource::setBarrierPositions()
 
 void GameSource::initaliseGame()
 {
-	m_gameWindow.setWindow(80, 30);	
-	createBuffers(80,30);
+	m_gameWindow.setWindow(80, 30);
+	createBuffers(80, 30);
 	setPlayerPoisiton();
 	setAlienPositions();
 	setBarrierPositions();
@@ -92,28 +92,39 @@ void GameSource::updateGame()
 		m_aliens[i].update();
 	}
 
-	if (!m_bomb.getState() == true)
+	if (!m_bomb.getState())
 	{
-		int randAlien = randomNum();
-		m_bomb.fireBomb(m_aliens[randAlien]);
+		randAlien = randomNum();
+
+		switch (switchBombDrops)
+		{
+			case 0:
+
+				if (m_aliens[randAlien].getState())
+				{
+					m_bomb.fireBomb(m_aliens[randAlien]);
+					switchBombDrops = 1;
+				}
+				else
+				{
+					switchBombDrops = 1;
+				}
+
+				break;
+
+			case 1:
+
+				for (int i = 0; i < 20; i++)
+				{
+					if (m_aliens[i].getXP() == m_player->getXPos())
+					{
+						m_bomb.fireBomb(m_aliens[i]);
+						switchBombDrops = 0;
+					}
+				}
+				break;
+		}
 	}
-
-	//for (int i = 0; i < sizeof(m_aliens) / sizeof(m_aliens[0]); i++) // explain sizeof
-	//	m_aliens[i].setSpeed(x); // why is this terrible? (fix for CW?)
-
-	
-
-	/*for (int i = 0; i < sizeof(m_aliens) / sizeof(m_aliens[0]); i++)
-	{
-		if (m_aliens[i].getXP() != 80)
-		{
-			m_aliens[i].update();
-		}
-		else
-		{
-			m_aliens[i].setPostion(0, 0);
-		}
-	}*/
 }
 
 void GameSource::setGameState(int x)
@@ -144,7 +155,7 @@ void GameSource::setGamePositions(int width, int height)  //potentially save and
 				{
 					if (m_barriers[bNo].getHealth() == 2 && m_barriers[bNo].getState() == true && m_barriers[bNo].getXPostion() == j)
 					{
-						m_backBuffer.setChar(m_barriers  [bNo].getXPostion(), BARRIER, '=');
+						m_backBuffer.setChar(m_barriers[bNo].getXPostion(), BARRIER, '=');
 					}
 					else if (m_barriers[bNo].getHealth() == 1 && m_barriers[bNo].getState() == true && m_barriers[bNo].getXPostion() == j)
 					{
@@ -184,7 +195,7 @@ void GameSource::setGamePositions(int width, int height)  //potentially save and
 		m_bomb.update();
 	}
 
-	
+
 };
 
 void GameSource::drawGame(int width, int height)
@@ -218,70 +229,60 @@ void GameSource::createBuffers(int width, int height)
 }
 void GameSource::swapBuffers() //this is not an efficient method
 {
-	m_frontBuffer = m_backBuffer;
+	swap(m_frontBuffer, m_backBuffer);
 	m_backBuffer = m_resetBuffer;
 }
 
 void GameSource::checkCollision(int width, int height)
 {
-	
 	for (Barrier& barrier : m_barriers)
 	{
-		if (barrier.getXPos() == m_missile.getXPos() && barrier.getYPos() == m_missile.getYPos() && barrier.getState() == true && barrier.getHealth() > 0 && m_missile.getState() == true)
+		if (barrier.isOnMissile(m_missile) == true)
 		{
-			if (barrier.getHealth() == 1)
-			{
-				barrier.setHealth(barrier.getHealth() - 1);
-				barrier.setState(false);
-				m_missile.setActive(false);
-			}
-			else
-			{
-				barrier.setHealth(barrier.getHealth() - 1);
-				m_missile.setActive(false);
-			}
-
+			m_missile.setActive(false);
 		}
 	}
 
 	for (Alien& alien : m_aliens)
 	{
-		if ((alien.getXP() + 1) == m_missile.getXPos() && alien.getYP() == m_missile.getYPos() && alien.getState() == true && m_missile.getState() == true)
+		if (alien.isOnPlayer(m_player) == true)
 		{
-			alien.setActive(false);
+			setGameState(GAMEOVER);
+		}
+		else if (alien.isOnMissile(m_missile))
+		{
 			m_missile.setActive(false);
 		}
 	}
-	
+
 
 	if (m_bomb.getState() == true)
 	{
 		for (Barrier& barrier : m_barriers)
 		{
-			if (barrier.getXPos() == m_bomb.getXPos() && barrier.getYPos() == m_bomb.getYPos() && barrier.getState() == true && barrier.getHealth() > 0)
+			if (barrier.isOnBomb(m_bomb))
 			{
-				barrier.setHealth(barrier.getHealth() - 1);
-				m_bomb.setActive(false);
-			}
-			else if (barrier.getXPos() == m_bomb.getXPos() && barrier.getYPos() == m_bomb.getYPos() && barrier.getState() == true && barrier.getHealth() == 1)
-			{
-				barrier.setState(false);
 				m_bomb.setActive(false);
 			}
 		}
 
-		if (m_bomb.getXPos() == m_player->getXPos() && m_bomb.getYPos() == m_player->getYPos())
+		
+		if (m_bomb.isOnPlayer(m_player) == true)
 		{
-			setGameState(2);
+			setGameState(GAMEOVER);
+			m_bomb.setActive(false);
 		}
-		else if(m_bomb.getYPos() == GROUND)
+		else if (m_bomb.isOnGround(GROUND) == true)
 		{
 			m_bomb.setActive(false);
 		}
-		else if (m_bomb.getXPos() == m_missile.getXPos() && m_bomb.getYPos() == m_missile.getYPos())
+		if (m_missile.getState() == true)
 		{
-			m_bomb.setActive(false);
-			m_missile.setActive(false);
+			if (m_bomb.isOnMissile(m_missile))
+			{
+				m_bomb.setActive(false);
+				m_missile.setActive(false);
+			}
 		}
 	}
 }
@@ -290,6 +291,7 @@ void GameSource::gameLoop()
 {
 	while (gS != gameState::EXIT)
 	{
+
 		switch (gS)
 		{
 		case STARTSCREEN:
@@ -300,14 +302,21 @@ void GameSource::gameLoop()
 			this->processInput();
 			this->updateGame();
 			this->setGamePositions(m_gameWindow.getWidth(), m_gameWindow.getHeight());
-			this->swapBuffers();
 			this->checkCollision(m_gameWindow.getWidth(), m_gameWindow.getHeight());
+			this->swapBuffers();
 			this->drawGame(m_gameWindow.getWidth(), m_gameWindow.getHeight());
 			break;
 		case GAMEOVER:
 			m_menu->gameOver();
-			this->setGameState(menuChoice);
-			this->initaliseGame();
+			if (menuChoice == 1)
+			{
+				this->setGameState(LEVEL1); // Restart the game at LEVEL1
+				m_gameWindow.setWindow(80, 30);
+				createBuffers(80, 30);
+				setPlayerPoisiton();
+				setAlienPositions();
+				setBarrierPositions();
+			}
 			break;
 		}
 

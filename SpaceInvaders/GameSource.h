@@ -43,6 +43,8 @@ public:
 
 private:
 	bool m_runLoop = true;
+	int switchBombDrops = 0;
+	int randAlien = 0;
 	Window m_gameWindow; // explain m_ convention
 	Ground m_gameGround;
 

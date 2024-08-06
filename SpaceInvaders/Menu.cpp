@@ -1,12 +1,41 @@
 #include "Menu.h"
+#include <conio.h> // for _getch()
+#include <iostream>
+#include <limits> // For std::numeric_limits
+
+using namespace std;
 
 extern int menuChoice = 0; //extern example to share data with menu and gameSource
 
-void Menu::run() 
+void clearInputBuffer() {
+    if (cin.fail()) {
+        cin.clear(); // Clear any error flags
+    }
+    // Use a loop to discard any remaining characters in the input buffer
+    while (cin.peek() != '\n' && cin.peek() != EOF) {
+        cin.get();
+    }
+
+    if (cin.peek() == '\n') {
+        cin.get(); // Remove the newline character from the buffer
+    }
+}
+
+void clearScreen() {
+#ifdef _WIN32
+    system("cls"); // Windows
+#else
+    system("clear"); // Unix/Linux
+#endif
+}
+
+
+void Menu::run()
 {
     bool valid = false;
+    int choice;
     do { //do while
-        system("cls"); // clear the screen
+        clearScreen();
         cout << "Start Screen:" << endl;
         cout << "1. Play Space Invaders" << endl;
         cout << "2. Quit" << endl;
@@ -14,16 +43,15 @@ void Menu::run()
         cin >> choice;
 
         switch (choice) {
-
         case 1:
             menuChoice = 1;
             valid = true;
-            system("cls"); // clear the screen
+            clearScreen();
             break;
         case 2:
             menuChoice = 2;
             valid = true;
-            system("cls"); // clear the screen
+            clearScreen();
             break;
         default:
             cout << "Invalid choice. Please try again." << endl;
@@ -38,39 +66,27 @@ void Menu::run()
 
 }
 
-void Menu::gameOver()
-{
-    bool valid = false;
-    do {
-        system("cls");
-        system("cls");
-        cout << "GAME OVER" << endl;
-        cout << "TRY AGAIN?" << endl;
-        cout << "1. YES" << endl;
-        cout << "2. NO" << endl;
-        cout << "Enter your choice: ";
-        cin >> choice;
+void Menu::gameOver() {
+    clearScreen();
 
-        switch (choice) {
-        case 1:
+    bool valid = false;
+    cout << "GAME OVER" << endl;
+    cout << "TRY AGAIN?" << endl;
+    cout << "1. YES" << endl;
+    cout << "2. NO" << endl;
+    cout << "Select your choice.";
+
+    while (!valid) {
+        if (GetKeyState('1') & 0x8000) {
             menuChoice = 1;
             valid = true;
-            system("cls"); // clear the screen
-            break;
-        case 2:
-            menuChoice = 0;
-            valid = true;
-            system("cls"); // clear the screen
-            break;
-        default:
-            cout << "Invalid choice. Please try again." << endl;
-            break;
+            clearScreen();
         }
-
-        if (!valid) {
-            cout << "Press any key to continue..." << endl;
-            _getch(); // wait for user to press any key
+        if (GetKeyState('2') & 0x8000) {
+            exit(0);
         }
-    } while (!valid);
+    }
 
+    cout << "Press any key to continue..." << endl;
+    _getch(); // wait for user to press any key
 }

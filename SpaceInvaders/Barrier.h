@@ -1,5 +1,7 @@
 #pragma once
 #include "GameObject.h"
+#include "Missile.h"
+#include "Bomb.h"
 
 class Barrier : public GameObject
 {
@@ -22,6 +24,9 @@ public:
 
 	void setState(bool in) { isActive = in; };
 	bool getState() { return isActive; }
+
+	bool isOnMissile(Missile missile);
+	bool isOnBomb(Bomb bomb);
 
 private:
 	int barrierHealth;

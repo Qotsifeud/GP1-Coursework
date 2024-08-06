@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-#include <conio.h> // for _getch()
+#include <windows.h>
 
 using namespace std;
 

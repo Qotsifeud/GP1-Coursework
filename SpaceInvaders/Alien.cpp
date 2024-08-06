@@ -16,6 +16,32 @@ void Alien::setActive(bool state)
 	this->m_isActive = state;
 }
 
+bool Alien::isOnMissile(Missile m_missile)
+{
+	if ((this->getXP() + 1) == m_missile.getXPos() && this->getYP() == m_missile.getYPos() && this->getState() == true && m_missile.getState() == true)
+	{
+		this->setActive(false);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool Alien::isOnPlayer(Player* m_player)
+{
+
+	if (this->getYP() == m_player->getYPos())
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 void Alien::draw()
 {
 	std::cout << "X";
