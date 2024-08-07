@@ -30,6 +30,7 @@ void GameSource::setAlienPositions()
 	for (int i = 0; i < 20; i++)
 	{
 		m_aliens[i].setPostion(i * 3, 1);
+		m_aliens[i].setActive(true);
 	}
 }
 
@@ -100,7 +101,7 @@ void GameSource::updateGame()
 		{
 			case 0:
 
-				if (m_aliens[randAlien].getState())
+				if (m_aliens[randAlien].getState() == true)
 				{
 					m_bomb.fireBomb(m_aliens[randAlien]);
 					switchBombDrops = 1;
@@ -116,7 +117,7 @@ void GameSource::updateGame()
 
 				for (int i = 0; i < 20; i++)
 				{
-					if (m_aliens[i].getXP() == m_player->getXPos())
+					if (m_aliens[i].getXP() == m_player->getXPos() && m_aliens[i].getState() == true);
 					{
 						m_bomb.fireBomb(m_aliens[i]);
 						switchBombDrops = 0;
@@ -276,9 +277,9 @@ void GameSource::checkCollision(int width, int height)
 		{
 			m_bomb.setActive(false);
 		}
-		if (m_missile.getState() == true)
+		if (m_missile.getState())
 		{
-			if (m_bomb.isOnMissile(m_missile))
+			if (m_bomb.isOnMissile(m_missile) == true)
 			{
 				m_bomb.setActive(false);
 				m_missile.setActive(false);
@@ -308,6 +309,8 @@ void GameSource::gameLoop()
 			break;
 		case GAMEOVER:
 			m_menu->gameOver();
+			m_frontBuffer = m_resetBuffer;
+			m_backBuffer = m_resetBuffer;
 			if (menuChoice == 1)
 			{
 				this->setGameState(LEVEL1); // Restart the game at LEVEL1
@@ -316,6 +319,7 @@ void GameSource::gameLoop()
 				setPlayerPoisiton();
 				setAlienPositions();
 				setBarrierPositions();
+				
 			}
 			break;
 		}

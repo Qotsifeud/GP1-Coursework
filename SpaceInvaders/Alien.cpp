@@ -9,6 +9,8 @@ void Alien::setPostion(int x, int y)
 {
 	xPos = x;
 	yPos = y;
+	movingRight = true;
+
 }
 
 void Alien::setActive(bool state) 
@@ -18,7 +20,7 @@ void Alien::setActive(bool state)
 
 bool Alien::isOnMissile(Missile m_missile)
 {
-	if ((this->getXP() + 1) == m_missile.getXPos() && this->getYP() == m_missile.getYPos() && this->getState() == true && m_missile.getState() == true)
+	if ((this->getXP()) == m_missile.getXPos() + 1 && this->getYP() == m_missile.getYPos() && this->getState() == true && m_missile.getState() == true)
 	{
 		this->setActive(false);
 		return true;
@@ -54,21 +56,33 @@ void Alien::setSpeed(int x)
 
 void Alien::update()
 {
-
 	if (m_isActive == true)
 	{
-		if (xPos >= 0 && xPos != 75)
+		if (movingRight)
 		{
-			xPos++;
+			if (xPos >= 0 && xPos != 75)
+			{
+				xPos++;
+				movingRight = true;
+			}
+			else if (xPos == 75)
+			{
+				yPos++;
+				movingRight = false;
+			}
 		}
-		else if (xPos == 75)
+		else
 		{
-			yPos++;
-
-			do
+			if (xPos != 0)
 			{
 				xPos--;
-			} while (xPos != 5);
+			}
+			else
+			{
+				yPos++;
+				movingRight = true;
+			}
 		}
+		
 	}
 }

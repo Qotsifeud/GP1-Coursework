@@ -29,5 +29,6 @@ public:
 private:
 	bool m_isActive;
 	static int m_speed;
+	bool movingRight = true;
 };
 

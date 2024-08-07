@@ -103,7 +103,7 @@ public:
     }
 
 private:
-    int row;
-    int col;
-    char** m_buffer;
+    int row = 0;
+    int col = 0;
+    char** m_buffer = new char*;
 };

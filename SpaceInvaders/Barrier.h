@@ -29,7 +29,7 @@ public:
 	bool isOnBomb(Bomb bomb);
 
 private:
-	int barrierHealth;
+	int barrierHealth = 0;
 	static int x;
 	bool isActive;
 };

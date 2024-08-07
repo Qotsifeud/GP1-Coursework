@@ -21,5 +21,5 @@ public:
 	void setYPos(int y) { this->yPos = y; };
 
 protected: //explain protected access
-	int xPos, yPos;
+	int xPos = 0, yPos = 0;
 };

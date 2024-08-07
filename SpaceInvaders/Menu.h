@@ -12,7 +12,7 @@ public:
 	void run();
 	void gameOver();
 
-	int choice;
+	int choice = 0;
 
 private:
 };

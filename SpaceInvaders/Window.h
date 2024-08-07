@@ -17,6 +17,6 @@ public:
 	int getHeight() { return this->height; }
 
 private:
-	int width, height;	
+	int width = 0, height = 0;
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 };
