@@ -20,7 +20,12 @@ void Alien::setActive(bool state)
 
 bool Alien::isOnMissile(Missile m_missile)
 {
-	if ((this->getXP()) == m_missile.getXPos() + 1 && this->getYP() == m_missile.getYPos() && this->getState() == true && m_missile.getState() == true)
+	if (this->getXP() + 1 == m_missile.getXPos() && this->getYP() == m_missile.getYPos() && this->getState() == true && m_missile.getState() == true)
+	{
+		this->setActive(false);
+		return true;
+	}
+	else if (this->getXP() - 1 == m_missile.getXPos() && this->getYP() == m_missile.getYPos() && this->getState() == true && m_missile.getState() == true)
 	{
 		this->setActive(false);
 		return true;

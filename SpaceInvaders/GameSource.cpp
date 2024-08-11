@@ -66,13 +66,20 @@ void GameSource::setBarrierPositions()
 
 void GameSource::initaliseGame()
 {
-	m_gameWindow.setWindow(80, 30);
-	createBuffers(80, 30);
+	m_gameWindow.setWindow(90, 30);
+	createBuffers(90, 30);
 	setPlayerPoisiton();
 	setAlienPositions();
 	setBarrierPositions();
 
-	gS = STARTSCREEN; // set starting gameState
+	m_currentLevel = 1;
+
+	highScoreFile.open("highScore.txt");
+	getline(highScoreFile, m_highScore);
+	highScoreFile.close();
+
+	levelText = "Level: " + std::to_string(m_currentLevel);
+	highScoreText = "High Score: " + m_highScore;
 }
 
 void GameSource::processInput()
@@ -126,6 +133,11 @@ void GameSource::updateGame()
 				break;
 		}
 	}
+
+	if (aliensActiveCheck = false)
+	{
+		gS = LEVEL2;
+	}
 }
 
 void GameSource::setGameState(int x)
@@ -137,6 +149,28 @@ void GameSource::setGamePositions(int width, int height)  //potentially save and
 { //Break here to show copies (Dynamic vs Static array)
 	for (int i = 0; i < height; i++)
 	{
+		if (i == LEVEL)
+		{
+			for (int j = 75; j <= 90; j++)
+			{
+				for (int l = 0; l < levelText.length(); l++)
+				{
+					m_backBuffer.setChar(i, j, levelText[l]);
+				}
+			}
+		}
+
+		/*if (i == HIGHSCORE)
+		{
+			for (int j = 75; j <= 90; j++)
+			{
+				for (int l = 0; l < highScoreText.length(); l++)
+				{
+					m_backBuffer.setChar(i, j, highScoreText[l]);
+				}
+			}
+		}*/
+
 		for (int j = 0; j < width; j++) // draw aliens
 		{
 			for (int aNo = 0; aNo < 20; aNo++) //3rd for loop, can this be improved? 2D array
@@ -228,7 +262,7 @@ void GameSource::createBuffers(int width, int height)
 	m_backBuffer = m_resetBuffer;
 
 }
-void GameSource::swapBuffers() //this is not an efficient method
+void GameSource::swapBuffers()
 {
 	swap(m_frontBuffer, m_backBuffer);
 	m_backBuffer = m_resetBuffer;
@@ -288,6 +322,22 @@ void GameSource::checkCollision(int width, int height)
 	}
 }
 
+void GameSource::alienStatusCheck()
+{
+	for (Alien a : m_aliens)
+	{
+		if (a.getState())
+		{
+			aliensActiveCheck = true;
+			continue;
+		}
+		else
+		{
+			aliensActiveCheck = false;
+		}
+	}
+}
+
 void GameSource::gameLoop()
 {
 	while (gS != gameState::EXIT)
@@ -307,19 +357,19 @@ void GameSource::gameLoop()
 			this->swapBuffers();
 			this->drawGame(m_gameWindow.getWidth(), m_gameWindow.getHeight());
 			break;
+		case LEVEL2:
+			this->processInput();
+			this->updateGame();
+			this->setGamePositions(m_gameWindow.getWidth(), m_gameWindow.getHeight());
+			this->checkCollision(m_gameWindow.getWidth(), m_gameWindow.getHeight());
+			this->swapBuffers();
+			this->drawGame(m_gameWindow.getWidth(), m_gameWindow.getHeight());
 		case GAMEOVER:
 			m_menu->gameOver();
-			m_frontBuffer = m_resetBuffer;
-			m_backBuffer = m_resetBuffer;
 			if (menuChoice == 1)
 			{
 				this->setGameState(LEVEL1); // Restart the game at LEVEL1
-				m_gameWindow.setWindow(80, 30);
-				createBuffers(80, 30);
-				setPlayerPoisiton();
-				setAlienPositions();
-				setBarrierPositions();
-				
+				this->initaliseGame();
 			}
 			break;
 		}
